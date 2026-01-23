@@ -1,0 +1,310 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://aument.dev/schema/v1/manifest.json",
+    "title": "Aument Manifest",
+    "description": "Schema for Aument application capability manifests",
+    "type": "object",
+    "required": [
+        "$schema",
+        "version",
+        "metadata",
+        "capabilities"
+    ],
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "const": "https://aument.dev/schema/v1"
+        },
+        "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "metadata": {
+            "type": "object",
+            "required": [
+                "name",
+                "description"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 10
+                },
+                "author": {
+                    "type": "string"
+                }
+            }
+        },
+        "definitions": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                    "$ref": "#/definitions/Definition"
+                }
+            }
+        },
+        "capabilities": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z][a-zA-Z0-9_]*$": {
+                    "$ref": "#/definitions/Capability"
+                }
+            }
+        },
+        "context": {
+            "type": "object"
+        }
+    },
+    "definitions": {
+        "Capability": {
+            "type": "object",
+            "required": [
+                "id",
+                "displayName",
+                "description",
+                "parameters",
+                "handler"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "displayName": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 20
+                },
+                "examples": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Parameter"
+                    }
+                },
+                "handler": {
+                    "$ref": "#/definitions/Handler"
+                },
+                "preconditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Precondition"
+                    }
+                },
+                "sideEffects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Entity"
+                    }
+                },
+                "category": {
+                    "type": "string"
+                },
+                "requiresConfirmation": {
+                    "type": "boolean"
+                },
+                "undoHandler": {
+                    "$ref": "#/definitions/Handler"
+                },
+                "undoParameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Parameter"
+                    }
+                },
+                "undoPreconditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Precondition"
+                    }
+                },
+                "undoSideEffects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Entity"
+                    }
+                },
+                "isAsync": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Parameter": {
+            "type": "object",
+            "required": [
+                "name",
+                "description",
+                "type",
+                "isRequired"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 10
+                },
+                "type": {
+                    "$ref": "#/definitions/ParameterType"
+                },
+                "isRequired": {
+                    "type": "boolean"
+                },
+                "validator": {
+                    "$ref": "#/definitions/Validator"
+                },
+                "defaultValue": {},
+                "examples": {
+                    "type": "array"
+                },
+                "isSensitive": {
+                    "type": "boolean"
+                },
+                "collectionApproach": {
+                    "$ref": "#/definitions/CollectionApproach"
+                }
+            }
+        },
+        "Validator": {
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "number"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "enum": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "value",
+                            "label"
+                        ],
+                        "properties": {
+                            "value": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "custom": {
+                    "$ref": "#/definitions/Handler"
+                },
+                "isAsync": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Precondition": {
+            "type": "object",
+            "required": [
+                "type",
+                "checker",
+                "description",
+                "errorMessage"
+            ],
+            "properties": {
+                "type": {
+                    "$ref": "#/definitions/PreconditionType"
+                },
+                "checker": {
+                    "$ref": "#/definitions/Handler"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "type": "string"
+                },
+                "isAsync": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "Handler": {
+            "type": "object",
+            "required": [
+                "name",
+                "handlerRef"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "handlerRef": {
+                    "type": "string"
+                }
+            }
+        },
+        "Entity": {
+            "type": "object",
+            "required": [
+                "name",
+                "properties"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "object"
+                }
+            }
+        },
+        "ParameterType": {
+            "type": "string",
+            "enum": [
+                "string",
+                "number",
+                "boolean",
+                "enum",
+                "object",
+                "array",
+                "file",
+                "date",
+                "time",
+                "datetime",
+                "any"
+            ]
+        },
+        "PreconditionType": {
+            "type": "string",
+            "enum": [
+                "state",
+                "permission",
+                "rateLimit",
+                "custom"
+            ]
+        },
+        "CollectionApproach": {
+            "type": "string",
+            "enum": [
+                "upfront",
+                "on-demand"
+            ]
+        },
+        "Definition": {
+            "type": "object"
+        }
+    }
+}
