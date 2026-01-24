@@ -1,0 +1,264 @@
+{
+  "$schema": "https://aument.dev/schema/v1",
+  "version": "1.0.0",
+  "metadata": {
+    "name": "TodoApp",
+    "description": "Simple todo list application for task management"
+  },
+  "capabilities": {
+    "addTodo": {
+      "id": "addTodo",
+      "displayName": "Add Todo",
+      "description": "Create a new todo item with text and optional priority",
+      "examples": [
+        "Add todo: buy milk",
+        "Create task 'call dentist' with high priority"
+      ],
+      "parameters": [
+        {
+          "name": "text",
+          "description": "The todo item text describing the task",
+          "type": "string",
+          "isRequired": true,
+          "validator": {
+            "min": 1,
+            "max": 200
+          },
+          "examples": [
+            "Buy milk",
+            "Call dentist"
+          ]
+        },
+        {
+          "name": "priority",
+          "description": "Priority level for the task",
+          "type": "enum",
+          "isRequired": false,
+          "validator": {
+            "enum": [
+              {
+                "value": "low",
+                "label": "Low priority"
+              },
+              {
+                "value": "medium",
+                "label": "Medium priority"
+              },
+              {
+                "value": "high",
+                "label": "High priority"
+              }
+            ]
+          },
+          "defaultValue": "medium"
+        }
+      ],
+      "handler": {
+        "name": "Add Todo Handler",
+        "handlerRef": "todoService.add"
+      },
+      "sideEffects": [
+        {
+          "name": "todos",
+          "properties": {
+            "action": "created"
+          }
+        }
+      ]
+    },
+    "completeTodo": {
+      "id": "completeTodo",
+      "displayName": "Complete Todo",
+      "description": "Mark a specific todo item as completed by its ID",
+      "examples": [
+        "Complete todo 1",
+        "Mark task 3 as done"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "description": "The unique identifier of the todo to complete",
+          "type": "number",
+          "isRequired": true,
+          "validator": {
+            "min": 1
+          },
+          "examples": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "handler": {
+        "name": "Complete Todo Handler",
+        "handlerRef": "todoService.complete"
+      },
+      "preconditions": [
+        {
+          "type": "state",
+          "checker": {
+            "name": "Todo Exists Checker",
+            "handlerRef": "todoService.exists"
+          },
+          "description": "The todo item must exist in the list",
+          "errorMessage": "Todo not found"
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "todos",
+          "properties": {
+            "action": "updated",
+            "field": "completed"
+          }
+        }
+      ],
+      "undoHandler": {
+        "name": "Uncomplete Todo Handler",
+        "handlerRef": "todoService.uncomplete"
+      }
+    },
+    "deleteTodo": {
+      "id": "deleteTodo",
+      "displayName": "Delete Todo",
+      "description": "Permanently remove a todo item from the list by ID",
+      "examples": [
+        "Delete todo 2",
+        "Remove task 5"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "description": "The unique identifier of the todo to delete",
+          "type": "number",
+          "isRequired": true,
+          "validator": {
+            "min": 1
+          },
+          "examples": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "handler": {
+        "name": "Delete Todo Handler",
+        "handlerRef": "todoService.delete"
+      },
+      "preconditions": [
+        {
+          "type": "state",
+          "checker": {
+            "name": "Todo Exists Checker",
+            "handlerRef": "todoService.exists"
+          },
+          "description": "The todo item must exist before deletion",
+          "errorMessage": "Cannot delete: todo not found"
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "todos",
+          "properties": {
+            "action": "deleted"
+          }
+        }
+      ],
+      "requiresConfirmation": true
+    },
+    "listTodos": {
+      "id": "listTodos",
+      "displayName": "List Todos",
+      "description": "Retrieve all todos or filter by completion status",
+      "examples": [
+        "Show all todos",
+        "List completed tasks",
+        "Show pending todos"
+      ],
+      "parameters": [
+        {
+          "name": "filter",
+          "description": "Filter todos by completion status",
+          "type": "enum",
+          "isRequired": false,
+          "validator": {
+            "enum": [
+              {
+                "value": "all",
+                "label": "All todos"
+              },
+              {
+                "value": "completed",
+                "label": "Completed only"
+              },
+              {
+                "value": "pending",
+                "label": "Pending only"
+              }
+            ]
+          },
+          "defaultValue": "all"
+        }
+      ],
+      "handler": {
+        "name": "List Todos Handler",
+        "handlerRef": "todoService.list"
+      }
+    },
+    "uncompleteTodo": {
+      "id": "UncompleteTodo",
+      "displayName": "Uncomplete Todo",
+      "description": "Mark a specific todo item as uncompleted by its ID",
+      "examples": [
+        "Uncomplete todo 1",
+        "Mark task 3 as undone"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "description": "The unique identifier of the todo to uncomplete",
+          "type": "number",
+          "isRequired": true,
+          "validator": {
+            "min": 1
+          },
+          "examples": [
+            1,
+            2,
+            3
+          ]
+        }
+      ],
+      "handler": {
+        "name": "Uncomplete Todo Handler",
+        "handlerRef": "todoService.uncomplete"
+      },
+      "preconditions": [
+        {
+          "type": "state",
+          "checker": {
+            "name": "Todo Exists Checker",
+            "handlerRef": "todoService.exists"
+          },
+          "description": "The todo item must exist in the list",
+          "errorMessage": "Todo not found"
+        }
+      ],
+      "sideEffects": [
+        {
+          "name": "todos",
+          "properties": {
+            "action": "updated",
+            "field": "completed"
+          }
+        }
+      ],
+      "undoHandler": {
+        "name": "Complete Todo Handler",
+        "handlerRef": "todoService.complete"
+      }
+    }
+  }
+}
