@@ -2,7 +2,7 @@ import { ManifestResolver } from "../manifestResolver";
 import { ParameterValidator } from "./parameterValidator";
 import { Strategy, StrategyValidationError, StrategyValidationResult, Intent } from "../types";
 import { Manifest } from "../../schema/types";
-import { StrategyDetailedValidationResult } from "../types/strategyValidation";
+import { StrategyDetailedValidationResult } from "../types";
 export class StrategyValidator {
     constructor(
         private manifestResolver: ManifestResolver,

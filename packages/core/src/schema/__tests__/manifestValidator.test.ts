@@ -4,7 +4,7 @@ import {
   manifestValidator,
   ManifestValidator,
 } from "../validation/manifestValidator";
-import { Manifest } from "../types/manifest";
+import { Manifest } from "../types";
 
 describe("ManifestValidator", () => {
   let validator: ManifestValidator;

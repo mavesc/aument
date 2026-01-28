@@ -1,4 +1,4 @@
-import type { Manifest } from "../types/manifest";
+import type { Manifest } from "../types";
 
 export class ManifestValidationError extends Error {
   constructor(
