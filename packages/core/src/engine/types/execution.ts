@@ -7,8 +7,10 @@ export interface ExecutionResult {
     executionTime?: number;
 }
 
+export type ExecutionErrorType = 'VALIDATION_ERROR' | 'PRECONDITION_FAILED' | 'HANDLER_NOT_FOUND' | 'EXECUTION_ERROR' | 'TIMEOUT';
+
 export interface ExecutionError {
-    type: 'VALIDATION_ERROR' | 'PRECONDITION_FAILED' | 'HANDLER_NOT_FOUND' | 'EXECUTION_ERROR' | 'TIMEOUT';
+    type: ExecutionErrorType;
     message: string;
     details?: unknown;
     capabilityId?: string;
