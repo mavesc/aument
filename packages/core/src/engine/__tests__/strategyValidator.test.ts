@@ -3,7 +3,7 @@ import { StrategyValidator } from '../validation/strategyValidator';
 import { ManifestResolver } from '../manifestResolver';
 import { ParameterValidator } from '../validation/parameterValidator';
 import type { Strategy } from '../types';
-import type { Manifest } from '../../schema/types';
+import type { Manifest } from '../../schema';
 
 describe('StrategyValidator', () => {
     let validator: StrategyValidator;

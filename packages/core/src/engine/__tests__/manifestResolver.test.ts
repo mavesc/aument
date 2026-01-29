@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { ManifestResolver } from '../manifestResolver';
-import type { Manifest } from '../../schema/types';
+import type { Manifest } from '../../schema';
 
 describe('ManifestResolver', () => {
     let resolver: ManifestResolver;

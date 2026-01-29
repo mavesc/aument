@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { ParameterValidator } from '../validation/parameterValidator';
-import type { Parameter } from '../../schema/types';
+import type { Parameter } from '../../schema';
 
 describe('ParameterValidator', () => {
     let validator: ParameterValidator;
