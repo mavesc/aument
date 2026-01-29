@@ -1,5 +1,5 @@
-import { Capability, Manifest } from "../schema/types";
-import { manifestValidator } from "../schema/validation/manifestValidator";
+import { Capability, Manifest } from "../schema";
+import { manifestValidator } from "../schema";
 export class ManifestResolver {
     private manifestCache = new Map<string, Manifest>();
 
