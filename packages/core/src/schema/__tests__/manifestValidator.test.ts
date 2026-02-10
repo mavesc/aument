@@ -89,7 +89,7 @@ describe("ManifestValidator", () => {
         $schema: "https://aument.dev/schema/v1",
         version: "1.0.0",
         metadata: {
-          name: "App",
+          name: "App with optional fields",
           description: "Test application",
         },
         capabilities: {
@@ -128,14 +128,19 @@ describe("ManifestValidator", () => {
             ],
             requiresConfirmation: true,
             isAsync: true,
-            undoHandler: {
+            undoCapabilityId: "cancelOrder",
+          },
+          cancelOrder: {
+            id: "cancelOrder",
+            displayName: "Cancel Order",
+            description: "Cancel previously placed order",
+            parameters: [],
+            handler: {
               name: "Cancel Order Handler",
               handlerRef: "order.cancel",
             },
-            undoParameters: [],
-            undoPreconditions: [],
-            undoSideEffects: [],
-          },
+            requiresConfirmation: true,
+          }
         },
       };
 
@@ -1712,7 +1717,7 @@ describe("ManifestValidator", () => {
             description: "Add capability with valid undo",
             parameters: [],
             handler: { name: "Add", handlerRef: "add.handler" },
-            undoHandler: { name: "Remove", handlerRef: "remove.handler" },
+            undoCapabilityId: "remove",
           },
           remove: {
             id: "remove",
@@ -1738,10 +1743,7 @@ describe("ManifestValidator", () => {
             description: "Add capability with invalid undo",
             parameters: [],
             handler: { name: "Add", handlerRef: "add.handler" },
-            undoHandler: {
-              name: "Nonexistent",
-              handlerRef: "nonexistent.handler",
-            },
+            undoCapabilityId: "nonexistent",
           },
         },
       };
@@ -1764,7 +1766,7 @@ describe("ManifestValidator", () => {
             description: "Add capability description",
             parameters: [],
             handler: { name: "Add", handlerRef: "add.handler" },
-            undoHandler: { name: "Remove", handlerRef: "remove.handler" },
+            undoCapabilityId: "remove",
           },
           update: {
             id: "update",
@@ -1772,7 +1774,7 @@ describe("ManifestValidator", () => {
             description: "Update capability description",
             parameters: [],
             handler: { name: "Update", handlerRef: "update.handler" },
-            undoHandler: { name: "Revert", handlerRef: "revert.handler" },
+            undoCapabilityId: "revert",
           },
           remove: {
             id: "remove",

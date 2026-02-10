@@ -114,26 +114,8 @@
                 "requiresConfirmation": {
                     "type": "boolean"
                 },
-                "undoHandler": {
-                    "$ref": "#/definitions/Handler"
-                },
-                "undoParameters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Parameter"
-                    }
-                },
-                "undoPreconditions": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Precondition"
-                    }
-                },
-                "undoSideEffects": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Entity"
-                    }
+                "undoCapability": {
+                    "$ref": "#/definitions/Capability"
                 },
                 "isAsync": {
                     "type": "boolean"

@@ -1,4 +1,4 @@
-import type { Manifest } from "../types";
+import type { Capability, Manifest } from "../types";
 
 export class ManifestValidationError extends Error {
   constructor(
@@ -18,9 +18,13 @@ interface ValidationResult {
 
 export class ManifestValidator {
   private errors: ManifestValidationError[] = [];
+  private capabilities: Set<string> = new Set();
+  private undoCapabilities: Set<string> = new Set();
 
   validate(data: unknown): data is Manifest {
     this.errors = [];
+    this.capabilities = new Set();
+    this.undoCapabilities = new Set();
 
     if (!this.isObject(data)) {
       this.addError("root", "Manifest must be an object");
@@ -45,7 +49,7 @@ export class ManifestValidator {
     }
 
     if (this.isObject(data.capabilities)) {
-      this.validateCapabilities(data.capabilities);
+      this.validateCapabilities(data, data.capabilities);
     }
 
     if (data.definitions !== undefined) {
@@ -58,6 +62,13 @@ export class ManifestValidator {
       if (!this.isObject(data.context)) {
         this.addError("context", "Must be an object");
       }
+    }
+
+    const isSubset = (setA: Set<string>, setB: Set<string>) =>
+      [...setB].every(el => setA.has(el));
+
+    if (!isSubset(this.capabilities, this.undoCapabilities)) {
+      this.addError("undoCapabilities", "Some undo capabilities are missing");
     }
 
     return this.errors.length === 0;
@@ -80,6 +91,23 @@ export class ManifestValidator {
     }
   }
 
+  private getHandlerRef(capabilities: Record<string, Capability>, capId: string): string {
+    return Object.values(capabilities)
+      .filter((cap) => cap.id === capId)
+      .map((cap) => cap.handler.handlerRef)[0] || "";
+  }
+
+  private getCapability(manifest: Record<string, unknown>, capId: string): Capability | null {
+    return Object.values((manifest as unknown as Manifest).capabilities).find((cap) => cap.id === capId) || null;
+  }
+
+  // private getCapabilityAsRecord(manifest: Record<string, unknown>, capId: string): Record<string, unknown> {
+  //   const obj: Record<string, unknown> = {
+  //     [capId]: this.getCapability(manifest, capId),
+  //   };
+  //   return obj;
+  // }
+
   validateSemantics(manifest: Manifest): void {
     this.errors = [];
 
@@ -92,15 +120,15 @@ export class ManifestValidator {
       // Check for duplicate handlers (might be intentional)
       handlers.add(handlerRef);
 
-      if (capability.undoHandler) {
-        undoHandlers.set(capId, capability.undoHandler.handlerRef);
+      if (capability.undoCapabilityId) {
+        undoHandlers.set(capId, this.getHandlerRef(manifest.capabilities, capability.undoCapabilityId));
       }
     }
 
     for (const [capId, undoRef] of undoHandlers.entries()) {
       if (!handlers.has(undoRef)) {
         this.addError(
-          `capabilities.${capId}.undoHandler`,
+          `capabilities.${capId}.undoCapabilityId`,
           `Undo handler "${undoRef}" not found in any capability`
         );
       }
@@ -153,7 +181,7 @@ export class ManifestValidator {
     }
   }
 
-  private validateCapabilities(capabilities: Record<string, unknown>): void {
+  private validateCapabilities(manifest: Record<string, unknown>, capabilities: Record<string, unknown>): void {
     const capabilityNames = Object.keys(capabilities);
 
     if (capabilityNames.length === 0) {
@@ -175,11 +203,12 @@ export class ManifestValidator {
         continue;
       }
 
-      this.validateCapability(capability, path);
+      this.validateCapability(manifest, capability, path);
     }
   }
 
   private validateCapability(
+    manifest: Record<string, unknown>,
     capability: Record<string, unknown>,
     path: string
   ): void {
@@ -266,46 +295,20 @@ export class ManifestValidator {
       this.addError(`${path}.isAsync`, "Must be a boolean");
     }
 
-    if (capability.undoHandler !== undefined) {
-      if (!this.isObject(capability.undoHandler)) {
-        this.addError(`${path}.undoHandler`, "Must be an object");
+    if (capability.undoCapabilityId !== undefined) {
+      if (typeof capability.undoCapabilityId !== "string") {
+        this.addError(`${path}.undoCapabilityId`, "Must be a string");
       } else {
-        this.validateHandler(capability.undoHandler, `${path}.undoHandler`);
+        const undoCapability = this.getCapability(
+          manifest,
+          capability.undoCapabilityId);
+        if (undoCapability === undefined || !this.isObject(undoCapability) || undoCapability === null) {
+          this.addError(`${path}.undoCapabilityId`, `Undo capability ${capability.undoCapabilityId} not found`);
+        }
+        this.undoCapabilities.add(capability.undoCapabilityId);
       }
     }
-
-    if (capability.undoParameters !== undefined) {
-      if (!Array.isArray(capability.undoParameters)) {
-        this.addError(`${path}.undoParameters`, "Must be an array");
-      } else {
-        this.validateParameters(
-          capability.undoParameters,
-          `${path}.undoParameters`
-        );
-      }
-    }
-
-    if (capability.undoPreconditions !== undefined) {
-      if (!Array.isArray(capability.undoPreconditions)) {
-        this.addError(`${path}.undoPreconditions`, "Must be an array");
-      } else {
-        this.validatePreconditions(
-          capability.undoPreconditions,
-          `${path}.undoPreconditions`
-        );
-      }
-    }
-
-    if (capability.undoSideEffects !== undefined) {
-      if (!Array.isArray(capability.undoSideEffects)) {
-        this.addError(`${path}.undoSideEffects`, "Must be an array");
-      } else {
-        this.validateEntities(
-          capability.undoSideEffects,
-          `${path}.undoSideEffects`
-        );
-      }
-    }
+    this.capabilities.add(capability.id as string);
   }
 
   private validateParameters(parameters: unknown[], path: string): void {

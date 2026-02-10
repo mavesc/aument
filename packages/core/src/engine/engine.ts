@@ -1,4 +1,4 @@
-import type { Manifest } from '../schema';
+import type { Capability, Manifest } from '../schema';
 import type { Intent } from './types';
 import type { ExecutionResult, ExecutionOptions, HandlerFunction, PreconditionCheckerFunction } from './types';
 import { ManifestResolver } from './manifestResolver';
@@ -132,6 +132,12 @@ export class Engine {
         this.preconditionChecker.registerChecker(checkerRef, checker);
     }
 
+    getHandlerRef(capabilities: Record<string, Capability>, capId: string): string {
+        return Object.values(capabilities)
+            .filter((cap) => cap.id === capId)
+            .map((cap) => cap.handler.handlerRef)[0] || "";
+    }
+
     private validateHandlerBindings(): void {
         const missingHandlers: string[] = [];
 
@@ -141,8 +147,8 @@ export class Engine {
                 missingHandlers.push(handlerRef);
             }
 
-            if (capability.undoHandler) {
-                const undoRef = capability.undoHandler.handlerRef;
+            if (capability.undoCapabilityId) {
+                const undoRef = this.getHandlerRef(this.manifest.capabilities, capability.undoCapabilityId);
                 if (!this.handlerRegistry.has(undoRef)) {
                     missingHandlers.push(undoRef);
                 }

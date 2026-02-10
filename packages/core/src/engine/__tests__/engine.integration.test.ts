@@ -154,7 +154,7 @@ describe('Engine (Integration)', () => {
                         description: 'Capability with undo handler',
                         parameters: [],
                         handler: { name: 'Main', handlerRef: 'main.handler' },
-                        undoHandler: { name: 'Undo', handlerRef: 'undo.handler' }
+                        undoCapabilityId: 'undo'
                     }
                 }
             });
@@ -163,7 +163,7 @@ describe('Engine (Integration)', () => {
                 'main.handler': () => 'done'
             };
 
-            expect(() => new Engine(manifest, handlers)).toThrow(/Undo handler.*"undo\.handler" not found in any capability/);
+            expect(() => new Engine(manifest, handlers)).toThrow(/Undo capability .* not found/);
         });
     });
 

@@ -15,10 +15,7 @@ export interface Capability {
   sideEffects?: Entity[];
   requiresConfirmation?: boolean;
 
-  undoHandler?: Handler;
-  undoParameters?: Parameter[];
-  undoPreconditions?: Precondition[];
-  undoSideEffects?: Entity[];
+  undoCapabilityId?: string;
 
   isAsync?: boolean;
 }

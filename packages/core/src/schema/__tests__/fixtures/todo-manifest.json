@@ -114,10 +114,7 @@
           }
         }
       ],
-      "undoHandler": {
-        "name": "Uncomplete Todo Handler",
-        "handlerRef": "todoService.uncomplete"
-      }
+      "undoCapabilityId": "uncompleteTodo"
     },
     "deleteTodo": {
       "id": "deleteTodo",
@@ -208,7 +205,7 @@
       }
     },
     "uncompleteTodo": {
-      "id": "UncompleteTodo",
+      "id": "uncompleteTodo",
       "displayName": "Uncomplete Todo",
       "description": "Mark a specific todo item as uncompleted by its ID",
       "examples": [
@@ -255,10 +252,7 @@
           }
         }
       ],
-      "undoHandler": {
-        "name": "Complete Todo Handler",
-        "handlerRef": "todoService.complete"
-      }
+      "undoCapabilityId": "completeTodo"
     }
   }
 }
