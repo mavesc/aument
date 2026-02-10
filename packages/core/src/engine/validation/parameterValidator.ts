@@ -9,7 +9,7 @@ export type ParameterValidationResult = {
 export class ParameterValidator {
     validate(
         paramDef: Parameter,
-        value: unknown
+        value: unknown,
     ): ParameterValidationResult {
         const errors: string[] = [];
 
@@ -40,12 +40,17 @@ export class ParameterValidator {
 
     validateAll(
         paramDefs: Parameter[],
-        providedParams: Record<string, unknown>
+        providedParams: Record<string, unknown>,
+        accContext?: Record<string, unknown>
     ): ParameterValidationResult {
         const allErrors: string[] = [];
 
         for (const paramDef of paramDefs) {
-            const value = providedParams[paramDef.name];
+            let value = providedParams[paramDef.name];
+            if (accContext && accContext.hasOwnProperty(paramDef.name) && (value === undefined || value === null)) {
+                providedParams[paramDef.name] = accContext[paramDef.name];
+                value = accContext[paramDef.name];
+            }
             const result = this.validate(paramDef, value);
             allErrors.push(...result.errors);
         }

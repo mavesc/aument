@@ -44,7 +44,7 @@ export class Engine {
     async execute(intent: Intent, options: ExecutionOptions = {}): Promise<ExecutionResult> {
         const { timeout, context = {} } = options;
 
-        const validationResult = this.strategyValidator.validate([intent], this.manifest);
+        const validationResult = this.strategyValidator.validate([intent], this.manifest, options.context);
         if (!validationResult.isValid) {
             const firstError = validationResult.errors[0];
             return this.resultFormatter.formatValidationError(

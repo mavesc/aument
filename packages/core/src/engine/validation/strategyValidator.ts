@@ -9,7 +9,7 @@ export class StrategyValidator {
         private paramValidator: ParameterValidator
     ) { }
 
-    validate(strategy: Strategy, manifest: Manifest): StrategyValidationResult {
+    validate(strategy: Strategy, manifest: Manifest, accContext?: Record<string, unknown>): StrategyValidationResult {
         const errors: StrategyValidationError[] = [];
 
         if (!Array.isArray(strategy)) {
@@ -29,7 +29,7 @@ export class StrategyValidator {
         }
 
         strategy.forEach((intent, index) => {
-            const intentErrors = this.validateIntent(intent, index, manifest);
+            const intentErrors = this.validateIntent(intent, index, manifest, accContext);
             errors.push(...intentErrors);
         });
 
@@ -42,7 +42,8 @@ export class StrategyValidator {
     private validateIntent(
         intent: Intent,
         index: number,
-        manifest: Manifest
+        manifest: Manifest,
+        accContext?: Record<string, unknown>
     ): StrategyValidationError[] {
         const errors: StrategyValidationError[] = [];
 
@@ -84,7 +85,8 @@ export class StrategyValidator {
 
         const paramResult = this.paramValidator.validateAll(
             capability.parameters,
-            intent.parameters
+            intent.parameters,
+            accContext
         );
 
         if (!paramResult.isValid) {
