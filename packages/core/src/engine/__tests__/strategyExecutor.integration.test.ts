@@ -215,7 +215,7 @@ describe('StrategyExecutor (Integration)', () => {
             const result = await executor.executeStrategy(strategy);
 
             expect(result.success).toBe(false);
-            expect(result.paused).toBe(true);
+            expect(result.isPaused).toBe(true);
             expect(result.requiredInputs).toHaveLength(1);
             expect(result.requiredInputs![0]).toMatchObject({
                 capabilityId: 'placeOrder',
@@ -271,7 +271,7 @@ describe('StrategyExecutor (Integration)', () => {
 
             const result = await executor.executeStrategy(strategy);
 
-            expect(result.paused).toBe(true);
+            expect(result.isPaused).toBe(true);
             expect(result.requiredInputs).toHaveLength(2);
             expect(result.requiredInputs?.map(r => r.parameter)).toEqual(['cvv', 'billingZip']);
         });
@@ -529,7 +529,7 @@ describe('StrategyExecutor (Integration)', () => {
 
             //pauses for CVV
             const pausedResult = await executor.executeStrategy(strategy, { transactional: true });
-            expect(pausedResult.paused).toBe(true);
+            expect(pausedResult.isPaused).toBe(true);
             expect(pausedResult.requiredInputs![0]?.parameter).toBe('cvv');
 
             //resumes with CVV, but checkout fails

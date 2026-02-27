@@ -24,7 +24,7 @@ export interface StrategyResult {
         message: string;
         stepIndex?: number;
     };
-    paused?: boolean;
+    isPaused?: boolean;
     requiredInputs?: ParameterRequest[];
     resumeToken?: string;
     completedSteps: number;

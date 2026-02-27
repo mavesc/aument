@@ -181,7 +181,7 @@ export class StrategyExecutor {
         return {
             success: false,
             results: state.results,
-            paused: true,
+            isPaused: true,
             requiredInputs,
             resumeToken,
             completedSteps: state.results.length
